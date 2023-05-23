@@ -27,6 +27,7 @@ func NewKeyManager() (*KeyManager, error) {
 	if error != nil {
 		return nil, error
 	}
+	km.Cache[kid] = key
 
 	return &km, nil
 }
