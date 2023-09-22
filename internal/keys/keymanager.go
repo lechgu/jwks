@@ -17,17 +17,14 @@ func NewKeyManager() (*KeyManager, error) {
 		Cache: make(map[string]*ecdsa.PrivateKey),
 		Jwks:  NewKeySet(),
 	}
-	kid, key, error := km.Jwks.GenerateNewKey()
-	if error != nil {
-		return nil, error
+	for i := 0; i < 3; i++ {
+		kid, key, error := km.Jwks.GenerateNewKey()
+		if error != nil {
+			return nil, error
+		}
+		km.Cache[kid] = key
+		time.Sleep(time.Second)
 	}
-	km.Cache[kid] = key
-	time.Sleep(time.Second)
-	kid, key, error = km.Jwks.GenerateNewKey()
-	if error != nil {
-		return nil, error
-	}
-	km.Cache[kid] = key
 
 	return &km, nil
 }
