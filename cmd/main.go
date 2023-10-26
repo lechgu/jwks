@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/ecdsa"
 	"log"
 	"net/http"
 	"time"
@@ -24,6 +25,10 @@ func main() {
 	r.GET("/jwt/", func(ctx *gin.Context) {
 		handleJwt(ctx, km)
 	})
+	r.GET("/v1/token/", func(ctx *gin.Context) {
+		handleSaladJwt(ctx, km)
+	})
+
 	r.Run()
 }
 
@@ -65,7 +70,7 @@ func handleJwt(ctx *gin.Context, km *keys.KeyManager) {
 		"iat":   iat,
 		"exp":   exp,
 		"iss":   "https://matrix-api.salad.io",
-		"aud":   "wss://beaver.salad.io",
+		"aud":   "https://matrix-api.salad.io",
 		"jti":   jti,
 		"sub":   sub,
 		"s_oid": sOid,
@@ -78,4 +83,36 @@ func handleJwt(ctx *gin.Context, km *keys.KeyManager) {
 		ctx.String(http.StatusInternalServerError, err.Error())
 	}
 	ctx.String(http.StatusOK, signedToken)
+}
+
+func handleSaladJwt(ctx *gin.Context, km *keys.KeyManager) {
+	now := time.Now().UTC().Unix()
+	saladMachineID := uuid.NewString()
+	iat := now
+	nbf := now
+	exp := time.Now().AddDate(1, 0, 0).UTC().Unix()
+
+	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
+		"sub":               saladMachineID,
+		"iss":               "https://matrix-api.salad.io",
+		"aud":               "https://matrix-api.salad.io",
+		"iat":               iat,
+		"nbf":               nbf,
+		"exp":               exp,
+		"salad_machine_id:": saladMachineID,
+	})
+	var kid string
+	var pk *ecdsa.PrivateKey
+	for k, v := range km.Cache {
+		kid = k
+		pk = v
+		break
+	}
+	token.Header["kid"] = kid
+	signedToken, err := token.SignedString(pk)
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, err.Error())
+	}
+	ctx.String(http.StatusOK, signedToken)
+
 }
