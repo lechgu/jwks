@@ -85,6 +85,10 @@ func handleJwt(ctx *gin.Context, km *keys.KeyManager) {
 	ctx.String(http.StatusOK, signedToken)
 }
 
+type TokenResponse struct {
+	JWT string `json:"jwt"`
+}
+
 func handleSaladJwt(ctx *gin.Context, km *keys.KeyManager) {
 	now := time.Now().UTC().Unix()
 	saladMachineID := uuid.NewString()
@@ -113,6 +117,9 @@ func handleSaladJwt(ctx *gin.Context, km *keys.KeyManager) {
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, err.Error())
 	}
-	ctx.String(http.StatusOK, signedToken)
+	response := TokenResponse{
+		JWT: signedToken,
+	}
+	ctx.JSON(http.StatusOK, response)
 
 }
