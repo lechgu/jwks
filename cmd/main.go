@@ -97,13 +97,13 @@ func handleSaladJwt(ctx *gin.Context, km *keys.KeyManager) {
 	exp := time.Now().AddDate(1, 0, 0).UTC().Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"sub":               saladMachineID,
-		"iss":               "https://matrix-api.salad.io",
-		"aud":               "https://matrix-api.salad.io",
-		"iat":               iat,
-		"nbf":               nbf,
-		"exp":               exp,
-		"salad_machine_id:": saladMachineID,
+		"sub":              saladMachineID,
+		"iss":              "https://matrix-api.salad.io",
+		"aud":              "https://matrix-api.salad.io",
+		"iat":              iat,
+		"nbf":              nbf,
+		"exp":              exp,
+		"salad_machine_id": saladMachineID,
 	})
 	var kid string
 	var pk *ecdsa.PrivateKey
