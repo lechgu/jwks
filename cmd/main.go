@@ -109,7 +109,7 @@ func handleSaladJwt(ctx *gin.Context, km *keys.KeyManager) {
 		"salad_machine_id":        saladMachineID,
 		"salad_workload_id":       saladWorkloadID,
 		"salad_organization_id":   saladOrganizationID,
-		"salad_eorkload_name":     fmt.Sprintf("workload [%s]", saladWorkloadID),
+		"salad_workload_name":     fmt.Sprintf("workload [%s]", saladWorkloadID),
 		"salad_organization_name": fmt.Sprintf("organization [%s]", saladOrganizationID),
 	})
 	var kid string
