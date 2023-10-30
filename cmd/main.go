@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/ecdsa"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -92,18 +93,24 @@ type TokenResponse struct {
 func handleSaladJwt(ctx *gin.Context, km *keys.KeyManager) {
 	now := time.Now().UTC().Unix()
 	saladMachineID := uuid.NewString()
+	saladWorkloadID := uuid.NewString()
+	saladOrganizationID := uuid.NewString()
 	iat := now
 	nbf := now
 	exp := time.Now().AddDate(1, 0, 0).UTC().Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
-		"sub":              saladMachineID,
-		"iss":              "https://matrix-api.salad.io",
-		"aud":              "https://matrix-api.salad.io",
-		"iat":              iat,
-		"nbf":              nbf,
-		"exp":              exp,
-		"salad_machine_id": saladMachineID,
+		"sub":                     saladMachineID,
+		"iss":                     "https://matrix-api.salad.io",
+		"aud":                     "https://matrix-api.salad.io",
+		"iat":                     iat,
+		"nbf":                     nbf,
+		"exp":                     exp,
+		"salad_machine_id":        saladMachineID,
+		"salad_workload_id":       saladWorkloadID,
+		"salad_organization_id":   saladOrganizationID,
+		"salad_eorkload_name":     fmt.Sprintf("workload [%s]", saladWorkloadID),
+		"salad_organization_name": fmt.Sprintf("organization [%s]", saladOrganizationID),
 	})
 	var kid string
 	var pk *ecdsa.PrivateKey
