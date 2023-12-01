@@ -48,6 +48,7 @@ func handleJwt(ctx *gin.Context, km *keys.KeyManager) {
 		ctx.String(http.StatusBadRequest, "invalid kid")
 	}
 	iat := time.Now().UTC().Unix()
+	nbf := time.Now().UTC().Unix()
 	exp := time.Now().AddDate(1, 0, 0).UTC().Unix()
 	sub := ctx.Query("sub")
 	if sub == "" {
@@ -69,6 +70,7 @@ func handleJwt(ctx *gin.Context, km *keys.KeyManager) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, jwt.MapClaims{
 		"iat":   iat,
+		"nbf":   nbf,
 		"exp":   exp,
 		"iss":   "https://matrix-api.salad.io",
 		"aud":   "https://matrix-api.salad.io",
